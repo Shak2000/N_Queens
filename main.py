@@ -1,58 +1,61 @@
-def is_safe(board, row, col, n):
-    """Check if placing a queen at (row, col) is safe"""
+class Board:
+    def __init__(self):
+        self.board = None
+        self.n = None
 
-    # Check column
-    for i in range(row):
-        if board[i][col] == 'Q':
-            return False
+    def is_safe(self, row, col):
+        """Check if placing a queen at (row, col) is safe"""
 
-    # Check upper left diagonal
-    i, j = row - 1, col - 1
-    while i >= 0 and j >= 0:
-        if board[i][j] == 'Q':
-            return False
-        i -= 1
-        j -= 1
+        # Check column
+        for i in range(row):
+            if self.board[i][col] == 'Q':
+                return False
 
-    # Check upper right diagonal
-    i, j = row - 1, col + 1
-    while i >= 0 and j < n:
-        if board[i][j] == 'Q':
-            return False
-        i -= 1
-        j += 1
+        # Check upper left diagonal
+        i, j = row - 1, col - 1
+        while i >= 0 and j >= 0:
+            if self.board[i][j] == 'Q':
+                return False
+            i -= 1
+            j -= 1
 
-    return True
+        # Check upper right diagonal
+        i, j = row - 1, col + 1
+        while i >= 0 and j < self.n:
+            if self.board[i][j] == 'Q':
+                return False
+            i -= 1
+            j += 1
 
+        return True
 
-def solve_nqueens(board, row, n, solutions):
-    """Recursive function to solve n-Queens using backtracking"""
+    def solve_nqueens(self, row, solutions):
+        """Recursive function to solve n-Queens using backtracking"""
 
-    # Base case: all queens placed
-    if row == n:
-        solutions.append([row[:] for row in board])  # Deep copy of solution
-        return
+        # Base case: all queens placed
+        if row == self.n:
+            solutions.append([row[:] for row in self.board])  # Deep copy of solution
+            return
 
-    # Try placing queen in each column of current row
-    for col in range(n):
-        if is_safe(board, row, col, n):
-            # Place queen
-            board[row][col] = 'Q'
+        # Try placing queen in each column of current row
+        for col in range(self.n):
+            if self.is_safe(row, col):
+                # Place queen
+                self.board[row][col] = 'Q'
 
-            # Recursively place queens in next rows
-            solve_nqueens(board, row + 1, n, solutions)
+                # Recursively place queens in next rows
+                self.solve_nqueens(row + 1, solutions)
 
-            # Backtrack - remove queen
-            board[row][col] = '.'
+                # Backtrack - remove queen
+                self.board[row][col] = '.'
 
-
-def print_solutions(solutions):
-    """Print all solutions in a readable format"""
-    for i, solution in enumerate(solutions, 1):
-        print(f"Solution {i}:")
-        for row in solution:
-            print(' '.join(row))
-        print()
+    def print_solutions(self, solutions):
+        """Print all solutions in a readable format"""
+        for i, solution in enumerate(solutions, 1):
+            print(f"Solution {i}:")
+            for row in solution:
+                print(' '.join(row))
+            print()
 
 
 def main():
@@ -65,23 +68,24 @@ def main():
             break
 
         try:
-            n = int(user_input)
-            if n < 1:
+            chessboard = Board()
+            chessboard.n = int(user_input)
+            if chessboard.n < 1:
                 print("Please enter a positive integer.")
                 continue
 
             # Initialize empty board
-            board = [['.' for _ in range(n)] for _ in range(n)]
+            chessboard.board = [['.' for _ in range(chessboard.n)] for _ in range(chessboard.n)]
             solutions = []
 
-            print(f"\nSolving {n}-Queens...")
-            solve_nqueens(board, 0, n, solutions)
+            print(f"\nSolving {chessboard.n}-Queens...")
+            chessboard.solve_nqueens(0, solutions)
 
             if solutions:
                 print(f"Found {len(solutions)} solution(s):\n")
-                print_solutions(solutions)
+                chessboard.print_solutions(solutions)
             else:
-                print(f"No solutions exist for {n}-Queens.\n")
+                print(f"No solutions exist for {chessboard.n}-Queens.\n")
 
         except ValueError:
             print(f"'{user_input}' is not a valid integer. Please try again.")
