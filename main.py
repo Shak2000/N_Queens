@@ -1,7 +1,7 @@
 class Board:
-    def __init__(self):
-        self.board = None
-        self.n = None
+    def __init__(self, n):
+        self.board = [['.' for _ in range(n)] for _ in range(n)]
+        self.n = n
 
     def is_safe(self, row, col):
         """Check if placing a queen at (row, col) is safe"""
@@ -68,14 +68,12 @@ def main():
             break
 
         try:
-            chessboard = Board()
-            chessboard.n = int(user_input)
+            chessboard = Board(int(user_input))
             if chessboard.n < 1:
                 print("Please enter a positive integer.")
                 continue
 
-            # Initialize empty board
-            chessboard.board = [['.' for _ in range(chessboard.n)] for _ in range(chessboard.n)]
+            # Initialize empty solutions
             solutions = []
 
             print(f"\nSolving {chessboard.n}-Queens...")
