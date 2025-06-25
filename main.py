@@ -11,6 +11,11 @@ class Board:
             if i != row and self.board[i][col] == 'Q':
                 return False
 
+        # Check row
+        for i in range(self.n):
+            if i != row and self.board[row][i] == 'Q':
+                return False
+
         # Check upper left diagonal
         i, j = row - 1, col - 1
         while i >= 0 and j >= 0:
