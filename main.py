@@ -49,6 +49,32 @@ class Board:
                 # Backtrack - remove queen
                 self.board[row][col] = '.'
 
+    def solve_nqueens_once(self, row):
+        """Recursive function to solve n-Queens using backtracking, but return only one solution"""
+
+        # Base case: all queens placed, and return the solution
+        if row == self.n:
+            return [row[:] for row in self.board]
+
+        # Try placing queen in each column of current row
+        for col in range(self.n):
+            if self.is_safe(row, col):
+                # Place queen
+                self.board[row][col] = 'Q'
+
+                # Recursively place queens in next rows
+                new_board = self.solve_nqueens_once(row + 1)
+
+                # Backtrack - remove queen
+                self.board[row][col] = '.'
+
+                # if a solution has been found, then return it
+                if len(new_board) > 0:
+                    return new_board
+
+        # if a solution has not been found, then return an empty list
+        return []
+
     def print_solutions(self, solutions):
         """Print all solutions in a readable format"""
         for i, solution in enumerate(solutions, 1):
