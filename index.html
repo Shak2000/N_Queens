@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Queens Solver</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .size-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .board-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .board {
+            display: grid;
+            gap: 2px;
+            background: #333;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 30px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .square:hover {
+            transform: scale(1.1);
+            z-index: 1;
+        }
+
+        .square.light {
+            background: #f0d9b5;
+        }
+
+        .square.dark {
+            background: #b58863;
+        }
+
+        .square.light:hover {
+            background: #f7e6d3;
+        }
+
+        .square.dark:hover {
+            background: #c49c7a;
+        }
+
+        .queen {
+            color: #2c3e50;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 20px;
+        }
+
+        .status.success {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .status.error {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .status.info {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .square {
+                width: 35px;
+                height: 35px;
+                font-size: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>♛ N-Queens Solver ♛</h1>
+
+        <div class="controls">
+            <div class="size-control">
+                <label for="boardSize">Board Size:</label>
+                <input type="number" id="boardSize" value="8" min="1" max="12">
+                <button class="btn-primary" onclick="createBoard()">Create Board</button>
+            </div>
+            <button class="btn-secondary" onclick="clearBoard()">Clear Board</button>
+            <button class="btn-success" onclick="solveBoard()">Solve</button>
+        </div>
+
+        <div class="board-container">
+            <div id="board" class="board"></div>
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let currentBoard = [];
+        let boardSize = 8;
+        let isLoading = false;
+
+        // Initialize the board on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            createBoard();
+        });
+
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                };
+
+                if (data && method === 'POST') {
+                    if (endpoint.includes('create_board')) {
+                        // Send size as query parameter for create_board
+                        endpoint += `?size=${data}`;
+                    } else {
+                        // For set_queen and remove_queen, send as form data
+                        const formData = new FormData();
+                        Object.keys(data).forEach(key => {
+                            formData.append(key, data[key]);
+                        });
+                        options.body = formData;
+                    }
+                }
+
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'API call failed');
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        async function createBoard() {
+            if (isLoading) return;
+
+            const sizeInput = document.getElementById('boardSize');
+            const newSize = parseInt(sizeInput.value);
+
+            if (newSize < 1 || newSize > 12) {
+                showStatus('Please enter a board size between 1 and 12', 'error');
+                return;
+            }
+
+            setLoading(true);
+            try {
+                boardSize = newSize;
+                const board = await apiCall('/create_board', 'POST', newSize);
+                currentBoard = board;
+                renderBoard();
+                showStatus(`Created ${boardSize}×${boardSize} board`, 'success');
+            } catch (error) {
+                showStatus('Failed to create board: ' + error.message, 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function clearBoard() {
+            if (isLoading) return;
+
+            setLoading(true);
+            try {
+                const board = await apiCall('/create_board', 'POST', boardSize);
+                currentBoard = board;
+                renderBoard();
+                showStatus('Board cleared', 'success');
+            } catch (error) {
+                showStatus('Failed to clear board: ' + error.message, 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function toggleQueen(row, col) {
+            if (isLoading) return;
+
+            setLoading(true);
+            try {
+                const isQueen = currentBoard[row][col] === 'Q';
+
+                if (isQueen) {
+                    // Remove queen
+                    await apiCall(`/remove_queen?x=${row}&y=${col}`, 'POST');
+                    currentBoard[row][col] = '.';
+                    showStatus(`Queen removed from (${row}, ${col})`, 'success');
+                } else {
+                    // Try to add queen
+                    try {
+                        await apiCall(`/set_queen?x=${row}&y=${col}`, 'POST');
+                        currentBoard[row][col] = 'Q';
+                        showStatus(`Queen placed at (${row}, ${col})`, 'success');
+                    } catch (error) {
+                        showStatus('Cannot place queen there - position is attacked by another queen', 'error');
+                    }
+                }
+
+                renderBoard();
+            } catch (error) {
+                showStatus('Failed to toggle queen: ' + error.message, 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function solveBoard() {
+            if (isLoading) return;
+
+            setLoading(true);
+            try {
+                const solution = await apiCall('/solve', 'POST');
+
+                if (solution && solution.length > 0) {
+                    currentBoard = solution;
+                    renderBoard();
+                    showStatus('Solution found!', 'success');
+                } else {
+                    showStatus('No solution possible from current board state', 'error');
+                }
+            } catch (error) {
+                showStatus('Failed to solve: ' + error.message, 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function renderBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            boardElement.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
+
+            for (let row = 0; row < boardSize; row++) {
+                for (let col = 0; col < boardSize; col++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.onclick = () => toggleQueen(row, col);
+
+                    if (currentBoard[row] && currentBoard[row][col] === 'Q') {
+                        square.innerHTML = '♛';
+                        square.classList.add('queen');
+                    }
+
+                    boardElement.appendChild(square);
+                }
+            }
+        }
+
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+
+            // Auto-clear success messages after 3 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    if (status.textContent === message) {
+                        status.textContent = '';
+                        status.className = 'status';
+                    }
+                }, 3000);
+            }
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.disabled = loading;
+                if (loading && btn.textContent === 'Solve') {
+                    btn.innerHTML = 'Solving... <span class="loading"></span>';
+                } else if (!loading && btn.innerHTML.includes('Solving')) {
+                    btn.textContent = 'Solve';
+                }
+            });
+
+            if (loading) {
+                showStatus('Processing...', 'info');
+            }
+        }
+    </script>
+</body>
+</html>
