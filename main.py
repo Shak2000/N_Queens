@@ -13,7 +13,7 @@ class Board:
 
         # Check row
         for i in range(self.n):
-            if i != row and self.board[row][i] == 'Q':
+            if i != col and self.board[row][i] == 'Q':
                 return False
 
         # Check upper left diagonal
